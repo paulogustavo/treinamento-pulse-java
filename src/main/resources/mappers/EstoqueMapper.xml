@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="br.com.pulse.mapper.EstoqueMapper">
+
+    <resultMap id="estoqueMap" type="br.com.pulse.model.Estoque">
+        <result column="id" property="id"/>
+        <result column="quantidade" property="quantidade"/>
+        <association column="p_id" property="produto" javaType="br.com.pulse.model.Produto">
+            <result column="p_id" property="id"/>
+            <result column="p_descricao" property="descricao"/>
+            <result column="p_valor_unitario" property="valorUnitario"/>
+        </association>
+        <association column="F_id" property="filial" javaType="br.com.pulse.model.Filial">
+            <result column="F_id" property="id"/>
+            <result column="F_descricao" property="descricao"/>
+        </association>
+    </resultMap>
+
+    <select id="recuperarPorId" parameterType="long" resultMap="estoqueMap">
+        SELECT
+       e.id_estoque as id,
+       e.quantidade as quantidade,
+       F.id_filial AS F_id,
+       p.id_produto as p_id,
+       p.descricao as p_descricao,
+       p.valor_unitario as p_valorUnitario
+        FROM estoque e
+    INNER JOIN filial f ON F.id_filial= e.fk_id_filial
+    INNER JOIN produto p on e.fk_id_produto = p.id_produto
+        WHERE e.id_estoque = #{id}
+    </select>
+
+    <insert id="salvar" parameterType="br.com.pulse.model.Estoque" useGeneratedKeys="true" keyProperty="estoque.id">
+        INSERT INTO PUBLIC.estoque (FK_ID_PRODUTO, FK_ID_FILIAL, QUANTIDADE)
+        VALUES (#{estoque.produto.id}, #{estoque.filial.id}, #{estoque.quantidade})
+    </insert>
+
+    <update id="atualizar" parameterType="br.com.pulse.model.Estoque">
+        UPDATE PUBLIC.ESTOQUE
+        SET
+        FK_ID_FILIAL = #{estoque.filial.id},
+        FK_ID_PRODUTO = #{estoque.produto.id},
+        QUANTIDADE = #{estoque.quantidade}
+        WHERE ID_ESTOQUE = #{estoque.id}
+    </update>
+
+    <select id="recuperarPorProdutoEFilial" parameterType="map" resultType="br.com.pulse.model.Estoque">
+        SELECT
+            id_estoque as id,
+            quantidade as quantidade,
+            fk_id_produto as produto.id,
+            fk_id_filial as filial.id
+        FROM public.estoque
+        WHERE fk_id_produto = #{produto.id} and fk_id_filial = #{filial.id}
+    </select>
+
+</mapper>

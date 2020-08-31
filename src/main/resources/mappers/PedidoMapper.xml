@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="br.com.pulse.mapper.PedidoMapper">
+
+    <resultMap id="pedidoMap" type="br.com.pulse.model.Pedido">
+        <result column="id_pedido" property="id"/>
+        <result column="valor_total" property="valorTotal"/>
+        <association column="fk_id_tipo_pedido" property="tipoPedido" javaType="br.com.pulse.model.TipoPedido">
+            <result column="id_tipo_pedido" property="id"/>
+            <result column="descricao" property="descricao"/>
+        </association>
+        <association column="fk_id_filial" property="filial" javaType="br.com.pulse.model.Filial">
+            <result column="id_filial" property="id"/>
+            <result column="descricao" property="descricao"/>
+        </association>
+        <collection property="items" javaType="ArrayList"
+                    ofType="br.com.pulse.model.Produto" select="buscarItensPedido"
+                    column="id"
+        />
+    </resultMap>
+
+    <select id="recuperarPorId" parameterType="long" resultMap="pedidoMap">
+        SELECT
+       P.id_pedido as id,
+       P.valor_total as valorTotal,
+       F.id_filial AS F_id,
+       F.descricao AS F_descricao,
+       tp.id_tipo_pedido as tp_id,
+       tp.descricao as tp_descricao,
+       sp.id_status_pedido as sp_id,
+       sp.descricao as sp_descricao
+        FROM pedido p
+    INNER JOIN filial f ON F.id_filial= p.id_pedido
+    INNER JOIN tipo_pedido tp on p.fk_id_tipo_pedido = tp.id_tipo_pedido
+    INNER JOIN status_pedido sp on p.fk_id_status_pedido = sp.id_status_pedido
+        WHERE p.id_pedido = #{pedido.id}
+    </select>
+
+    <insert id="salvar" parameterType="br.com.pulse.model.Pedido" useGeneratedKeys="true" keyProperty="pedido.id" keyColumn="ID_PROJETO">
+        INSERT INTO PUBLIC.PEDIDO (FK_ID_TIPO_PEDIDO, FK_ID_FILIAL, FK_ID_STATUS_PEDIDO, VALOR_TOTAL)
+        VALUES (#{pedido.tipoPedido.id}, #{pedido.filial.id}, #{pedido.statusPedido.id}, #{pedido.valorTotal)
+    </insert>
+
+    <update id="atualizar" parameterType="br.com.pulse.model.Pedido">
+        UPDATE PUBLIC.PEDIDO
+        SET
+        FK_ID_FILIAL = #{pedido.filial.id},
+        FK_ID_TIPO_PEDIDO = #{pedido.tipoPedido.id},
+        FK_ID_STATUS_PEDIDO = #{pedido.statusPedido.id},
+        VALOR_TOTAL = #{pedido.valorTotal},
+        WHERE ID_PEDIDO = #{pedido.id}
+    </update>
+
+    <select id="buscarItensPedido" parameterType="br.com.pulse.model.Pedido" resultType="br.com.pulse.model.ItemPedido">
+        SELECT
+            id_item_pedido as id,
+            fk_id_pedido as pedido.id,
+            fk_id_produto as produto.id,
+            fk_id_status_item_pedido as statusItemPedido.id,
+            quantidade as quantidade
+        FROM public.item_pedido
+        WHERE fk_id_pedido = #{pedido.id}
+    </select>
+
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="br.com.pulse.mapper.ItemPedidoMapper">
+
+    <insert id="salvar" parameterType="br.com.pulse.model.ItemPedido" useGeneratedKeys="true" keyProperty="filial.id">
+        INSERT INTO PUBLIC.FILIAL (DESCRICAO)
+        VALUES (#{filial.descricao})
+    </insert>
+
+</mapper>
