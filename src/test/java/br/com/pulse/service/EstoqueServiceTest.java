@@ -4,8 +4,6 @@ import br.com.pulse.mapper.EstoqueMapper;
 import br.com.pulse.model.Estoque;
 import br.com.pulse.model.Filial;
 import br.com.pulse.model.Produto;
-import br.com.pulse.model.dto.EstoqueDto;
-import br.com.pulse.model.dto.FilialDto;
 import br.com.pulse.model.exception.CustomException;
 import org.junit.Assert;
 import org.junit.Before;

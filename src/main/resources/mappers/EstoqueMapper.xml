@@ -5,27 +5,29 @@
     <resultMap id="estoqueMap" type="br.com.pulse.model.Estoque">
         <result column="id" property="id"/>
         <result column="quantidade" property="quantidade"/>
-        <association column="p_id" property="produto" javaType="br.com.pulse.model.Produto">
+        <association property="produto" javaType="br.com.pulse.model.Produto">
             <result column="p_id" property="id"/>
             <result column="p_descricao" property="descricao"/>
-            <result column="p_valor_unitario" property="valorUnitario"/>
+            <result column="p_valorUnitario" property="valorUnitario"/>
         </association>
-        <association column="F_id" property="filial" javaType="br.com.pulse.model.Filial">
-            <result column="F_id" property="id"/>
-            <result column="F_descricao" property="descricao"/>
+        <association property="filial" javaType="br.com.pulse.model.Filial">
+            <result column="f_id" property="id"/>
+            <result column="f_descricao" property="descricao"/>
         </association>
+
     </resultMap>
 
     <select id="recuperarPorId" parameterType="long" resultMap="estoqueMap">
         SELECT
        e.id_estoque as id,
        e.quantidade as quantidade,
-       F.id_filial AS F_id,
        p.id_produto as p_id,
        p.descricao as p_descricao,
-       p.valor_unitario as p_valorUnitario
+       p.valor_unitario as p_valorUnitario,
+       f.id_filial AS f_id,
+       f.descricao AS f_descricao
         FROM estoque e
-    INNER JOIN filial f ON F.id_filial= e.fk_id_filial
+    INNER JOIN filial f ON f.id_filial= e.fk_id_filial
     INNER JOIN produto p on e.fk_id_produto = p.id_produto
         WHERE e.id_estoque = #{id}
     </select>
